@@ -45,6 +45,14 @@ class NotesHomeController extends ChangeNotifier {
     super.dispose();
   }
 
+  DateTime? get selectedDay {
+    final weekDays = getWeekDays();
+    if (selectedDayIndex >= 0 && selectedDayIndex < weekDays.length) {
+      return weekDays[selectedDayIndex];
+    }
+    return null;
+  }
+
   List<DateTime> getWeekDays() {
     final now = DateTime.now();
     final startOfWeek = now.subtract(Duration(days: now.weekday % 7));
@@ -59,9 +67,26 @@ class NotesHomeController extends ChangeNotifier {
     return buffer.toString();
   }
 
+  void selectDayIndex(int index) {
+    final days = getWeekDays();
+    if (index < 0 || index >= days.length) return;
+    if (selectedDayIndex == index) return;
+    selectedDayIndex = index;
+    notifyListeners();
+  }
+
+  /// Set category via controller (keeps state changes centralized).
+  void setSelectedCategory(Category? c) {
+    if (selectedCategory == c) return;
+    selectedCategory = c;
+    notifyListeners();
+  }
+
   List<NoteModel> getFilteredSortedNotes() {
     final all = NotesRepository.getAll();
-    List<NoteModel> filtered = all.where((n) {
+
+    final selected = selectedDay;
+    final filtered = all.where((n) {
       final plain = plainTextFromDelta(n.bodyDelta);
 
       final matchesSearch =
@@ -76,35 +101,33 @@ class NotesHomeController extends ChangeNotifier {
       final matchesCategory =
           selectedCategory == null || n.category == selectedCategory;
 
-      return matchesSearch && matchesTags && matchesCategory;
+      // ✅ New: Filter by selected date
+      final matchesDay =
+          selected == null ||
+          (n.createdAt.year == selected.year &&
+              n.createdAt.month == selected.month &&
+              n.createdAt.day == selected.day);
+
+      return matchesSearch && matchesTags && matchesCategory && matchesDay;
     }).toList();
 
-    // 🔹 Step 1: Apply sort mode
-    switch (sortMode) {
-      case SortMode.updatedDesc:
-        filtered.sort((a, b) => b.updatedAt.compareTo(a.updatedAt));
-        break;
-      case SortMode.createdDesc:
-        filtered.sort((a, b) => b.createdAt.compareTo(a.createdAt));
-        break;
-      case SortMode.titleAsc:
-        filtered.sort(
-          (a, b) => a.title.toLowerCase().compareTo(b.title.toLowerCase()),
-        );
-        break;
-    }
-
-    // 🔹 Step 2: Reorder so pinned notes always come first
+    // ✅ Combined sort with pinning
     filtered.sort((a, b) {
-      if (a.isPinned! && !b.isPinned!) return -1;
-      if (!a.isPinned! && b.isPinned!) return 1;
-      return 0; // leave original sort order
+      if (a.isPinned == true && b.isPinned != true) return -1;
+      if (a.isPinned != true && b.isPinned == true) return 1;
+
+      switch (sortMode) {
+        case SortMode.updatedDesc:
+          return b.updatedAt.compareTo(a.updatedAt);
+        case SortMode.createdDesc:
+          return b.createdAt.compareTo(a.createdAt);
+        case SortMode.titleAsc:
+          return a.title.toLowerCase().compareTo(b.title.toLowerCase());
+      }
     });
 
     return filtered;
   }
-
-
 
   Future<void> createNewNote(BuildContext context) async {
     final now = DateTime.now();

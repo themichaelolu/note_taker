@@ -127,7 +127,7 @@ class _NotesHomePageState extends State<NotesHomePage>
                   final date = weekDays[index];
                   final isSelected = controller.selectedDayIndex == index;
                   return GestureDetector(
-                    onTap: () => controller.selectedDayIndex = index,
+                    onTap: () => controller.selectDayIndex(index),
                     child: Container(
                       margin: const EdgeInsets.only(right: 12),
                       padding: const EdgeInsets.symmetric(
