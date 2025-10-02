@@ -277,8 +277,12 @@ class _NotesHomePageState extends State<NotesHomePage>
                                       ),
                                     ),
                                   ),
-                                  if (n.tags.contains("pinned"))
-                                    const Icon(Icons.push_pin, size: 16),
+                                  if (n.isPinned == true)
+                                    Icon(
+                                      CupertinoIcons.pin_fill,
+                                      size: 24,
+                                      color: Colors.grey.shade500,
+                                    ),
                                 ],
                               ),
                               const SizedBox(height: 8),

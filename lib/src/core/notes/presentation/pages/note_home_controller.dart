@@ -79,6 +79,7 @@ class NotesHomeController extends ChangeNotifier {
       return matchesSearch && matchesTags && matchesCategory;
     }).toList();
 
+    // 🔹 Step 1: Apply sort mode
     switch (sortMode) {
       case SortMode.updatedDesc:
         filtered.sort((a, b) => b.updatedAt.compareTo(a.updatedAt));
@@ -92,8 +93,18 @@ class NotesHomeController extends ChangeNotifier {
         );
         break;
     }
+
+    // 🔹 Step 2: Reorder so pinned notes always come first
+    filtered.sort((a, b) {
+      if (a.isPinned! && !b.isPinned!) return -1;
+      if (!a.isPinned! && b.isPinned!) return 1;
+      return 0; // leave original sort order
+    });
+
     return filtered;
   }
+
+
 
   Future<void> createNewNote(BuildContext context) async {
     final now = DateTime.now();

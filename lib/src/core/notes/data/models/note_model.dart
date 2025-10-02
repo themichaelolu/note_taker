@@ -11,6 +11,7 @@ class NoteModel {
   Category category;
   int colorValue;
   List<String> tags;
+  bool? isPinned;
 
   NoteModel({
     required this.id,
@@ -21,6 +22,7 @@ class NoteModel {
     required this.category,
     required this.colorValue,
     required this.tags,
+    this.isPinned = false,
   });
 
   quill.Delta get bodyDelta => quill.Delta.fromJson(bodyJson);
@@ -41,6 +43,8 @@ class NoteModelAdapter extends TypeAdapter<NoteModel> {
     final catIdx = reader.readInt();
     final colorValue = reader.readInt();
     final tags = (reader.read() as List).cast<String>();
+    final hasMore = reader.availableBytes > 0;
+    final isPinned = hasMore ? reader.readBool() : false;
     return NoteModel(
       id: id,
       title: title,
@@ -50,6 +54,7 @@ class NoteModelAdapter extends TypeAdapter<NoteModel> {
       category: Category.values[catIdx],
       colorValue: colorValue,
       tags: tags,
+      isPinned: isPinned,
     );
   }
 
@@ -63,5 +68,6 @@ class NoteModelAdapter extends TypeAdapter<NoteModel> {
     writer.writeInt(obj.category.index);
     writer.writeInt(obj.colorValue);
     writer.write(obj.tags);
+    writer.writeBool(obj.isPinned ?? false);
   }
 }

@@ -9,6 +9,7 @@ class Note {
   final Category category;
   final int colorValue;
   final List<String> tags;
+  bool? isPinned;
 
   Note({
     required this.id,
@@ -19,5 +20,6 @@ class Note {
     required this.category,
     required this.colorValue,
     required this.tags,
+    this.isPinned = false,
   });
 }

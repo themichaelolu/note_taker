@@ -55,10 +55,36 @@ class _NoteEditorPageState extends State<NoteEditorPage> {
           onPressed: () => controller.save(context),
         ),
         actions: [
-          _appBarAction(
-            icon: const Icon(CupertinoIcons.pin_fill, size: 20),
-            onTap: () {},
-          ),
+         _appBarAction(
+  icon: AnimatedSwitcher(
+    duration: const Duration(milliseconds: 250),
+    transitionBuilder: (child, anim) {
+      // Scale + rotation animation
+      return RotationTransition(
+        turns: Tween<double>(begin: 0.75, end: 1).animate(anim),
+        child: ScaleTransition(scale: anim, child: child),
+      );
+    },
+    child: Icon(
+      note.isPinned == true
+          ? CupertinoIcons.pin_fill
+          : CupertinoIcons.pin_slash, // 🔹 clear feedback
+      key: ValueKey(note.isPinned), // needed for AnimatedSwitcher
+      size: 22,
+      color: note.isPinned == true
+          ? Theme.of(context).colorScheme.primary
+          : Theme.of(context).iconTheme.color,
+    ),
+  ),
+  onTap: () async {
+    setState(() {
+      note.isPinned = !(note.isPinned ?? false);
+    });
+    await NotesRepository.addOrUpdate(note); // persist pin state
+  },
+),
+
+
           _appBarAction(
             icon: const Icon(Icons.create_new_folder_sharp, size: 24),
             onTap: () async {

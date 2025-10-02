@@ -21,6 +21,12 @@ class NoteEditorController extends ChangeNotifier {
     _loadNote();
   }
 
+  Future<void> togglePin(NoteModel n) async {
+    final updated = n..isPinned = !n.isPinned!;
+    await NotesRepository.addOrUpdate(updated);
+    notifyListeners();
+  }
+
   void _loadNote() {
     final stored = NotesRepository.box.get(noteId);
     if (stored == null) {
