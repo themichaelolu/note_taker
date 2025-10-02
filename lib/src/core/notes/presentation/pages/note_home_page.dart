@@ -102,8 +102,11 @@ class _NotesHomePageState extends State<NotesHomePage>
             TextField(
               controller: controller.searchController,
               decoration: InputDecoration(
-                hint: Text('Search for notes', style: TextStyle(fontSize: 14)),
-                prefixIcon: const Icon(CupertinoIcons.search),
+                hint: Text(
+                  'Search for notes',
+                  style: TextStyle(fontSize: 14, color: Colors.black),
+                ),
+                prefixIcon: Icon(CupertinoIcons.search, color: Colors.grey),
                 filled: true,
                 fillColor: Colors.grey.shade200,
                 border: OutlineInputBorder(
@@ -270,6 +273,7 @@ class _NotesHomePageState extends State<NotesHomePage>
                                       style: const TextStyle(
                                         fontSize: 16,
                                         fontWeight: FontWeight.bold,
+                                        color: Colors.black,
                                       ),
                                     ),
                                   ),
@@ -283,7 +287,10 @@ class _NotesHomePageState extends State<NotesHomePage>
                                   controller.plainTextFromDelta(n.bodyDelta),
                                   maxLines: 6,
                                   overflow: TextOverflow.ellipsis,
-                                  style: const TextStyle(fontSize: 13),
+                                  style: const TextStyle(
+                                    fontSize: 13,
+                                    color: Colors.black,
+                                  ),
                                 ),
                               ),
                             ],
@@ -299,10 +306,12 @@ class _NotesHomePageState extends State<NotesHomePage>
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        backgroundColor: Colors.black,
+        backgroundColor: Theme.of(
+          context,
+        ).floatingActionButtonTheme.backgroundColor,
         shape: CircleBorder(),
         onPressed: () => controller.createNewNote(context),
-        child: const Icon(Icons.add, color: Colors.white),
+        child: const Icon(Icons.add),
       ),
     );
   }

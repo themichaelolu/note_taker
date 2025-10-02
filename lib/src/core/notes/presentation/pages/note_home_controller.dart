@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_quill/quill_delta.dart' as quill;
 import 'package:hive/hive.dart';
+import 'package:note_taker/main.dart';
 import 'package:note_taker/src/core/notes/data/models/note_model.dart';
 import 'package:note_taker/src/core/notes/domains/entities/category.dart';
 import 'package:note_taker/src/core/notes/domains/repositories/note_repository.dart';
@@ -140,9 +141,9 @@ class NotesHomeController extends ChangeNotifier {
 
   void toggleTheme() {
     final box = Hive.box('settings');
-    final current = box.get('darkMode', defaultValue: false) as bool;
-    box.put('darkMode', !current);
-    // no notify needed; UI reading Hive will update
+    int current = box.get('theme', defaultValue: 0) as int;
+    int next = (current + 1) % ThemeSetting.values.length;
+    box.put('theme', next);
   }
 
   Future<void> deleteNoteWithConfirm(BuildContext context, NoteModel n) async {

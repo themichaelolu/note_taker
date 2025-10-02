@@ -6,6 +6,9 @@ import 'package:note_taker/src/core/notes/data/models/note_model.dart';
 import 'package:note_taker/src/core/notes/domains/entities/category.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:note_taker/src/core/notes/presentation/pages/note_home_page.dart';
+import 'package:note_taker/src/features/app_theme.dart';
+
+enum ThemeSetting { system, light, dark }
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -41,39 +44,27 @@ class _NotesAppState extends State<NotesApp> {
   @override
   Widget build(BuildContext context) {
     return ValueListenableBuilder(
-      valueListenable: settingsBox.listenable(keys: ['darkMode']),
+      valueListenable: settingsBox.listenable(keys: ['theme']),
       builder: (context, Box box, _) {
-        final dark = box.get('darkMode', defaultValue: false) as bool;
+        final int modeIndex = box.get('theme', defaultValue: 0) as int;
+        final themeSetting = ThemeSetting.values[modeIndex];
         return MaterialApp(
           title: 'Notes (Hive + Quill)',
-          themeMode: dark ? ThemeMode.dark : ThemeMode.light,
-          theme: ThemeData(
-            fontFamily: 'EauSans',
-            scaffoldBackgroundColor: Colors.white,
-            useMaterial3: true,
-            appBarTheme: AppBarTheme(backgroundColor: Colors.white),
-            colorScheme: ColorScheme.fromSeed(seedColor: Colors.blueGrey),
-            brightness: Brightness.light,
-          ),
-          darkTheme: ThemeData(
-            useMaterial3: true,
-            colorScheme: ColorScheme.fromSeed(
-              seedColor: Colors.blueGrey,
-              brightness: Brightness.dark,
-            ),
-            brightness: Brightness.dark,
-          ),
-          home: NotesHomePage(),
-
+          theme: AppTheme.lightTheme,
+          darkTheme: AppTheme.darkTheme,
+          themeMode: themeSetting == ThemeSetting.system
+              ? ThemeMode.system
+              : themeSetting == ThemeSetting.dark
+              ? ThemeMode.dark
+              : ThemeMode.light,
+          home: const NotesHomePage(),
           localizationsDelegates: const [
             FlutterQuillLocalizations.delegate,
             GlobalMaterialLocalizations.delegate,
             GlobalWidgetsLocalizations.delegate,
             GlobalCupertinoLocalizations.delegate,
           ],
-          supportedLocales: const [
-            Locale('en'), // add more if you want
-          ],
+          supportedLocales: const [Locale('en')],
           debugShowCheckedModeBanner: false,
         );
       },
