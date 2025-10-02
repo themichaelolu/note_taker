@@ -17,6 +17,13 @@ class AppTheme {
     ),
 
     iconTheme: const IconThemeData(color: Colors.black),
+    elevatedButtonTheme: ElevatedButtonThemeData(
+      style: ElevatedButton.styleFrom(
+        backgroundColor: Colors.black,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        padding: EdgeInsets.symmetric(vertical: 14),
+      ),
+    ),
 
     textTheme: lightTextTheme.apply(
       bodyColor: AppColors.primaryTextColor,
@@ -27,7 +34,7 @@ class AppTheme {
       backgroundColor: Colors.black,
       foregroundColor: Colors.white,
     ),
-
+    hintColor: Colors.white,
     cardTheme: CardThemeData(
       color: AppColors.pastelCream,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
@@ -50,13 +57,15 @@ class AppTheme {
       backgroundColor: Color(0xFF1E1E1E),
       foregroundColor: Colors.white,
       elevation: 0,
+
       iconTheme: IconThemeData(color: Colors.white),
     ),
+    hintColor: Colors.white,
     iconTheme: const IconThemeData(color: Colors.white),
     fontFamily: 'EauSans',
 
     textTheme: ThemeData.dark().textTheme.apply(
-      bodyColor: Colors.black,
+      bodyColor: AppColors.darkTextPrimaryColor,
       displayColor: AppColors.darkTextPrimaryColor,
 
       fontFamily: 'EauSans',
@@ -71,6 +80,13 @@ class AppTheme {
       color: AppColors.pastelCream,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       elevation: 2,
+    ),
+    elevatedButtonTheme: ElevatedButtonThemeData(
+      style: ElevatedButton.styleFrom(
+        backgroundColor: Colors.white,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        padding: EdgeInsets.symmetric(vertical: 14),
+      ),
     ),
     bottomSheetTheme: const BottomSheetThemeData(
       backgroundColor: Color(0xFF2C2C2C),

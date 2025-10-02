@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_quill/flutter_quill.dart' as quill;
@@ -6,6 +8,8 @@ import 'package:flutter_quill/quill_delta.dart' as quill;
 import 'package:note_taker/src/core/notes/data/models/note_model.dart';
 import 'package:note_taker/src/core/notes/domains/entities/category.dart';
 import 'package:note_taker/src/core/notes/domains/repositories/note_repository.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:pdf/widgets.dart' as pw;
 import 'package:share_plus/share_plus.dart';
 
 class NoteEditorController extends ChangeNotifier {
@@ -92,9 +96,39 @@ class NoteEditorController extends ChangeNotifier {
   }
 
   Future<void> share() async {
+    final pdf = pw.Document();
+
     final title = note.title;
     final plain = plainTextFromDelta(note.bodyDelta);
-    await Share.share('$title\n\n$plain');
+
+    pdf.addPage(
+      pw.Page(
+        build: (pw.Context context) {
+          return pw.Column(
+            crossAxisAlignment: pw.CrossAxisAlignment.start,
+            children: [
+              pw.Text(
+                title,
+                style: pw.TextStyle(
+                  fontSize: 20,
+                  fontWeight: pw.FontWeight.bold,
+                ),
+              ),
+              pw.SizedBox(height: 16),
+              pw.Text(plain, style: const pw.TextStyle(fontSize: 14)),
+            ],
+          );
+        },
+      ),
+    );
+
+    // Save to temporary directory
+    final dir = await getTemporaryDirectory();
+    final file = File('${dir.path}/$title.pdf');
+    await file.writeAsBytes(await pdf.save());
+
+    // Share the file
+    await Share.shareXFiles([XFile(file.path)], text: 'Sharing note as PDF');
   }
 
   String plainTextFromDelta(quill.Delta d) {

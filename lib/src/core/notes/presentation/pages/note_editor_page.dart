@@ -5,6 +5,7 @@ import 'package:note_taker/src/core/notes/presentation/pages/note_editor_control
 import 'package:note_taker/src/core/notes/data/models/note_model.dart';
 import 'package:note_taker/src/core/notes/domains/entities/category.dart';
 import 'package:note_taker/src/core/notes/domains/repositories/note_repository.dart';
+import 'package:note_taker/src/features/app_colors.dart';
 import 'package:share_plus/share_plus.dart';
 
 class NoteEditorPage extends StatefulWidget {
@@ -55,35 +56,31 @@ class _NoteEditorPageState extends State<NoteEditorPage> {
           onPressed: () => controller.save(context),
         ),
         actions: [
-         _appBarAction(
-  icon: AnimatedSwitcher(
-    duration: const Duration(milliseconds: 250),
-    transitionBuilder: (child, anim) {
-      // Scale + rotation animation
-      return RotationTransition(
-        turns: Tween<double>(begin: 0.75, end: 1).animate(anim),
-        child: ScaleTransition(scale: anim, child: child),
-      );
-    },
-    child: Icon(
-      note.isPinned == true
-          ? CupertinoIcons.pin_fill
-          : CupertinoIcons.pin_slash, // 🔹 clear feedback
-      key: ValueKey(note.isPinned), // needed for AnimatedSwitcher
-      size: 22,
-      color: note.isPinned == true
-          ? Theme.of(context).colorScheme.primary
-          : Theme.of(context).iconTheme.color,
-    ),
-  ),
-  onTap: () async {
-    setState(() {
-      note.isPinned = !(note.isPinned ?? false);
-    });
-    await NotesRepository.addOrUpdate(note); // persist pin state
-  },
-),
-
+          _appBarAction(
+            icon: AnimatedSwitcher(
+              duration: const Duration(milliseconds: 250),
+              transitionBuilder: (child, anim) {
+                // Scale + rotation animation
+                return RotationTransition(
+                  turns: Tween<double>(begin: 0.75, end: 1).animate(anim),
+                  child: ScaleTransition(scale: anim, child: child),
+                );
+              },
+              child: Icon(
+                note.isPinned == true
+                    ? CupertinoIcons.pin_fill
+                    : CupertinoIcons.pin_slash, // 🔹 clear feedback
+                key: ValueKey(note.isPinned), // needed for AnimatedSwitcher
+                size: 22,
+              ),
+            ),
+            onTap: () async {
+              setState(() {
+                note.isPinned = !(note.isPinned ?? false);
+              });
+              await NotesRepository.addOrUpdate(note); // persist pin state
+            },
+          ),
 
           _appBarAction(
             icon: const Icon(Icons.create_new_folder_sharp, size: 24),
@@ -163,6 +160,10 @@ class _NoteEditorPageState extends State<NoteEditorPage> {
                                 child: SizedBox(
                                   width: double.infinity,
                                   child: ElevatedButton(
+                                    style: Theme.of(
+                                      context,
+                                    ).elevatedButtonTheme.style,
+
                                     onPressed: () =>
                                         Navigator.of(ctx2).pop(tempSelection),
                                     child: const Text("Save"),
@@ -208,12 +209,13 @@ class _NoteEditorPageState extends State<NoteEditorPage> {
                         border: InputBorder.none,
                         hintText: 'Title',
                         hintStyle: theme.textTheme.headlineSmall?.copyWith(
-                          color: theme.hintColor,
+                          color: invertColor(theme.hintColor),
                           fontWeight: FontWeight.w600,
                         ),
                       ),
                       style: theme.textTheme.headlineSmall?.copyWith(
                         fontWeight: FontWeight.w600,
+                        color: theme.hintColor,
                       ),
                     ),
                     const SizedBox(height: 12),
@@ -221,6 +223,7 @@ class _NoteEditorPageState extends State<NoteEditorPage> {
                       constraints: const BoxConstraints(minHeight: 400),
                       child: quill.QuillEditor.basic(
                         controller: controller.quillController,
+                        
                       ),
                     ),
                   ],
@@ -231,7 +234,7 @@ class _NoteEditorPageState extends State<NoteEditorPage> {
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
               child: Container(
                 decoration: BoxDecoration(
-                  color: colorScheme.surfaceVariant,
+                  color: theme.primaryColor,
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: SafeArea(
@@ -307,7 +310,7 @@ class _NoteEditorPageState extends State<NoteEditorPage> {
         icon,
         color: isActive
             ? Color(controller.note.colorValue)
-            : theme.iconTheme.color,
+            : invertColor(theme.primaryColor),
         size: 20,
       ),
       onPressed: () => controller.toggleAttribute(attribute),
